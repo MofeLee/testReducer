@@ -1,4 +1,7 @@
 'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 const todo = (state, action) => {
   state = state || {};
 
@@ -113,6 +116,36 @@ const createStore = (reducer) => {
 
 const store = createStore(todoApp);
 
+// 0.14新语法
+const App = () => {
+  return (
+    <div>Hello</div>
+  )
+}
+
+// const App = React.createClass({
+//   render: () => {
+//     return (
+//       <div>Hello</div>
+//     )
+//   }
+// })
+
+// class App extends React.Component {
+//   render() {
+//     return (
+//       <div> Hello </div>
+//     )
+//   }
+// }
+
+const render = () => {
+  ReactDOM.render(
+    <App />,
+    document.body
+  );
+}
+render();
 
 const unSubscribe = store.subscribe(() => {
   console.log(store.getState())
