@@ -46,20 +46,40 @@ const visibilityFilter = (state, action) => {
   }
 }
 
-
-const todoApp = (state, action) => {
-  state = state || {};
-  return {
-    todos: todos(
-      state.todos,
-      action
-    ),
-    visibilityFilter: visibilityFilter(
-      state.visibilityFilter,
-      action
-    )
+const combineReducers = (reducers) => {
+  return (state, action) => {
+    state = state || {};
+    return Object.keys(reducers).reduce(
+      (previousState, key) => { // 返回一个包含所有组件更新状态后的状态树对象
+        previousState[key] = reducers[key](
+          state[key],
+          action
+        );
+        return previousState;
+      },
+      {}
+    ); // 不能传state进来，否则会mutating整个应用的状态
   }
 }
+
+const todoApp = combineReducers({
+  todos,
+  visibilityFilter
+})
+
+// const todoApp = (state, action) => {
+//   state = state || {};
+//   return {
+//     todos: todos(
+//       state.todos,
+//       action
+//     ),
+//     visibilityFilter: visibilityFilter(
+//       state.visibilityFilter,
+//       action
+//     )
+//   }
+// }
 
 
 const createStore = (reducer) => {
@@ -94,7 +114,9 @@ const createStore = (reducer) => {
 const store = createStore(todoApp);
 
 
-const unSubscribe = store.subscribe(() => { console.log(store.getState())});
+const unSubscribe = store.subscribe(() => {
+  console.log(store.getState())
+});
 
 store.dispatch({
   type: 'ADD_TODO',
