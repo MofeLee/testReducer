@@ -1,8 +1,6 @@
 'use strict';
-var todo = (state, action) => {
-  if (state === undefined) {
-    state = {};
-  }
+const todo = (state, action) => {
+  state = state || {};
 
   switch (action.type) {
     case 'ADD_TODO':
@@ -24,10 +22,9 @@ var todo = (state, action) => {
   }
 }
 
-var todos = (state, action) => {
-  if (state === undefined) {
-    state = [];
-  }
+const todos = (state, action) => {
+  state = state || [];
+
   switch (action.type) {
     case 'ADD_TODO':
       return state.concat([todo(state, action)]);
@@ -38,10 +35,34 @@ var todos = (state, action) => {
   }
 };
 
+const visibilityFilter = (state, action) => {
+  state = state || 'SHOW_ALL';
+
+  switch (action.type) {
+    case 'SET_VISIBILITY_FILTER':
+      return action.filter;
+    default:
+      return state;
+  }
+}
 
 
+const todoApp = (state, action) => {
+  state = state || {};
+  return {
+    todos: todos(
+      state.todos,
+      action
+    ),
+    visibilityFilter: visibilityFilter(
+      state.visibilityFilter,
+      action
+    )
+  }
+}
 
-var createStore = (reducer) => {
+
+const createStore = (reducer) => {
   let state;
   let listeners = [];
 
@@ -61,15 +82,19 @@ var createStore = (reducer) => {
     }
   }
 
+  dispatch({}); // 初始化state
+
   return {
     getState, dispatch, subscribe
   };
 }
 
-const store = createStore(todos);
+////////////////////////////////execute
+
+const store = createStore(todoApp);
 
 
-var unSubscribe = store.subscribe(() => { console.log(store.getState())});
+const unSubscribe = store.subscribe(() => { console.log(store.getState())});
 
 store.dispatch({
   type: 'ADD_TODO',
@@ -77,13 +102,17 @@ store.dispatch({
   id: 1
 });
 
-unSubscribe();
-
+// unSubscribe();
 
 store.dispatch({
   type: 'TOGGLE_TODO',
   id: 1
-})
+});
+
+store.dispatch({
+  type: 'SET_VISIBILITY_FILTER',
+  filter: 'SHOW_COMPLETED'
+});
 
 // var states = [];
 
