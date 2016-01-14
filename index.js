@@ -43,7 +43,7 @@ var todos = (state, action) => {
 
 var createStore = (reducer) => {
   let state;
-  const listeners = [];
+  let listeners = [];
 
   const getState = () => state;
 
@@ -55,7 +55,12 @@ var createStore = (reducer) => {
 
   const subscribe = (listener) => {
     listeners.push(listener);
+
+    return () => {
+      listeners = listeners.filter(l => l !== listener);
+    }
   }
+
   return {
     getState, dispatch, subscribe
   };
@@ -64,13 +69,16 @@ var createStore = (reducer) => {
 const store = createStore(todos);
 
 
-store.subscribe(() => { console.log(store.getState())});
+var unSubscribe = store.subscribe(() => { console.log(store.getState())});
 
 store.dispatch({
   type: 'ADD_TODO',
   text: '123',
   id: 1
 });
+
+unSubscribe();
+
 
 store.dispatch({
   type: 'TOGGLE_TODO',
